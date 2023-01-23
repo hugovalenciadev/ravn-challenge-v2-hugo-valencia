@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcrypt';
+import { User } from '@prisma/client';
+import { compare, genSalt, hash } from 'bcrypt';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UsersService, UserWithUserRole } from 'src/users/users.service';
 
 @Injectable()
@@ -18,6 +20,13 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  async signup(createUserDto: CreateUserDto): Promise<User> {
+    const salt = await genSalt(10);
+    const passwordHash = await hash(createUserDto.password, salt);
+    createUserDto.password = passwordHash;
+    return await this.usersService.createClient(createUserDto);
   }
 
   async signin(user: UserWithUserRole) {
