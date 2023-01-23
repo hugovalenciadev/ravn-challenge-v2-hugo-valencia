@@ -1,0 +1,6 @@
+/dist
+/node_modules
+package.json
+.gitignore
+tsconfig.json
+.eslintrc.js
