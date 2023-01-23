@@ -6,11 +6,12 @@ import { AuthService } from './auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt-strategy';
 import { LocalStrategy } from './strategies/local-strategy';
 
 @Module({
-  providers: [AuthService, LocalStrategy, LocalAuthGuard, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, LocalStrategy, RolesGuard, LocalAuthGuard, JwtStrategy, JwtAuthGuard],
   controllers: [AuthController],
   imports: [
     UsersModule,
