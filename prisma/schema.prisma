@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  email         String         @unique
+  firstName     String         @map("first_name")
+  lastName      String         @map("last_name")
+  password      String
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @default(now()) @map("updated_at")
+  enabled       Boolean        @default(true)
+  userRoles     UserRole[]
+  productLikes  ProductLike[]
+  shoppingCarts ShoppingCart[]
+  orders        Order[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String     @unique
+  description String?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @map("updated_at")
+  enabled     Boolean    @default(true)
+  userRoles   UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+  roleId String @map("role_id") @db.Uuid
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("users_roles")
+}
+
+model Category {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String            @unique
+  description      String?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @default(now()) @map("updated_at")
+  enabled          Boolean           @default(true)
+  categoryProducts CategoryProduct[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  enabled     Boolean   @default(true)
+  quantity    Int       @default(0)
+  price       Decimal   @db.Decimal(10, 3)
+
+  categoryProducts    CategoryProduct[]
+  productImages       ProductImage[]
+  productLikes        ProductLike[]
+  shoppingCartDetails ShoppingCartDetail[]
+  orderDetails        OrderDetail[]
+
+  @@map("products")
+}
+
+model CategoryProduct {
+  categoryId String   @map("category_id") @db.Uuid
+  category   Category @relation(fields: [categoryId], references: [id])
+  productId  String   @map("product_id") @db.Uuid
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@id([categoryId, productId])
+  @@map("categories_products")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  url       String
+  key       String
+  productId String   @map("product_id") @db.Uuid
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  enabled   Boolean  @default(true)
+  featured  Boolean  @default(false)
+
+  @@map("product_images")
+}
+
+model ProductLike {
+  id        String   @id @default(uuid()) @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  enabled   Boolean  @default(true)
+
+  @@unique([userId, productId])
+  @@map("product_likes")
+}
+
+model ShoppingCart {
+  id                  String               @id @default(uuid()) @db.Uuid
+  userId              String               @map("user_id") @db.Uuid
+  user                User                 @relation(fields: [userId], references: [id])
+  status              String
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @default(now()) @map("updated_at")
+  enabled             Boolean              @default(true)
+  shoppingCartDetails ShoppingCartDetail[]
+
+  @@map("shopping_carts")
+}
+
+model ShoppingCartDetail {
+  id             String       @id @default(uuid()) @db.Uuid
+  shoppingCartId String       @map("shopping_cart_id") @db.Uuid
+  shoppingCart   ShoppingCart @relation(fields: [shoppingCartId], references: [id])
+  productId      String       @map("product_id") @db.Uuid
+  product        Product      @relation(fields: [productId], references: [id])
+  quantity       Int          @default(1)
+
+  @@map("shopping_cart_details")
+}
+
+model Order {
+  id           String        @id @default(uuid()) @db.Uuid
+  userId       String        @map("user_id") @db.Uuid
+  user         User          @relation(fields: [userId], references: [id])
+  status       String
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @map("updated_at")
+  enabled      Boolean       @default(true)
+  total        Decimal       @db.Decimal(10, 3)
+  orderDetails OrderDetail[]
+
+  @@map("orders")
+}
+
+model OrderDetail {
+  id        String  @id @default(uuid()) @db.Uuid
+  orderId   String  @map("order_id") @db.Uuid
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String  @map("product_id") @db.Uuid
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+  price     Decimal @db.Decimal(10, 3)
+
+  @@map("order_details")
+}

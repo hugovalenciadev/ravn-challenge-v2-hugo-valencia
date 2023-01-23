@@ -9,4 +9,6 @@ export const appValidationSchema = Joi.object({
     .valid(AppEnvironment.DEV, AppEnvironment.TEST, AppEnvironment.STAGING, AppEnvironment.PRODUCTION)
     .default(AppEnvironment.DEV),
   PORT: Joi.number().default(3000),
+  // prisma
+  DATABASE_URL: Joi.string().required(),
 });
