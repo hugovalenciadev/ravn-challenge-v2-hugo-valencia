@@ -5,6 +5,10 @@
   "author": "Hugo Valencia",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "16.19.0",
+    "yarn": "1.22.19"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
