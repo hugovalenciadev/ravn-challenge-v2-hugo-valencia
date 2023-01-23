@@ -11,4 +11,7 @@ export const appValidationSchema = Joi.object({
   PORT: Joi.number().default(3000),
   // prisma
   DATABASE_URL: Joi.string().required(),
+  //jwt
+  JWT_SECRET: Joi.string().required(),
+  JWT_EXPIRES_IN: Joi.string().required(),
 });
