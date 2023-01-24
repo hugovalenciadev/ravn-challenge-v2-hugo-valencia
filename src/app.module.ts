@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import appConfig from './config/app.config';
 import storageConfig from './config/storage.config';
 import { appValidationSchema } from './config/validators/app.validator';
+import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
 import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
@@ -22,6 +23,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     ProductsModule,
     ShoppingCartsModule,
+    OrdersModule,
     AuthModule,
   ],
   controllers: [],

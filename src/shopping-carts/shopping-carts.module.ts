@@ -7,7 +7,7 @@ import { ShoppingCartsService } from './shopping-carts.service';
 @Module({
   imports: [ProductsModule, UsersModule],
   providers: [ShoppingCartsService],
-  exports: [ShoppingCartsModule],
+  exports: [ShoppingCartsService],
   controllers: [ShoppingCartsController],
 })
 export class ShoppingCartsModule {}

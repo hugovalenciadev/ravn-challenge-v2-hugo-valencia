@@ -6,6 +6,17 @@ import { UsersService } from 'src/users/users.service';
 import { UpdateShoppingCartDto } from './dtos/update-shopping-cart.dto';
 import ShoppingCartStatus from './enums/shopping-cart-status.enum';
 
+export type ShoppingCartWithUserAndDetails = Prisma.ShoppingCartGetPayload<{
+  include: {
+    shoppingCartDetails: {
+      include: {
+        product: true;
+      };
+    };
+    user: true;
+  };
+}>;
+
 @Injectable()
 export class ShoppingCartsService {
   constructor(
@@ -56,6 +67,27 @@ export class ShoppingCartsService {
       });
     }
     return shoppingCartInstance;
+  }
+
+  async findFirstPendingByUser(userId: string): Promise<ShoppingCartWithUserAndDetails | null> {
+    return await this.prismaService.shoppingCart.findFirst({
+      where: {
+        userId: userId,
+        status: ShoppingCartStatus.Pending,
+        enabled: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        shoppingCartDetails: {
+          include: {
+            product: true,
+          },
+        },
+        user: true,
+      },
+    });
   }
 
   async add(userId: string, productId: string): Promise<ShoppingCart> {
