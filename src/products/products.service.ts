@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
+import { Category, Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
 import { StorageService } from 'src/integrations/services/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateProductDto } from './dtos/create-product.dto';
+
+export type ProductResponse = {
+  [key: string]: any;
+  categoryProducts: Category[];
+};
 
 @Injectable()
 export class ProductsService {
@@ -28,6 +34,43 @@ export class ProductsService {
       where,
       orderBy,
     });
+  }
+
+  async create(input: CreateProductDto): Promise<ProductResponse> {
+    const { categories, ...data } = input;
+
+    const product = await this.prismaService.product.create({
+      data: {
+        ...data,
+        categoryProducts: {
+          create: categories.map(({ name }) => {
+            return {
+              category: {
+                connectOrCreate: {
+                  where: {
+                    name,
+                  },
+                  create: {
+                    name,
+                  },
+                },
+              },
+            };
+          }),
+        },
+      },
+      include: {
+        categoryProducts: {
+          include: {
+            category: true,
+          },
+        },
+      },
+    });
+    return {
+      ...product,
+      categoryProducts: product?.categoryProducts.map((item) => item.category),
+    };
   }
 
   async update(params: { where: Prisma.ProductWhereUniqueInput; data: Prisma.ProductUpdateInput }): Promise<Product> {
