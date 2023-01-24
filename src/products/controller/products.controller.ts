@@ -1,4 +1,5 @@
-import { Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -23,5 +24,13 @@ export class ProductsController {
   @Roles(RoleEnum.Client)
   async dislike(@Param('productId') productId: string, @Req() req: Request) {
     return this.productsService.dislike(req?.user['id'], productId);
+  }
+
+  @Post('/:productId/images')
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Manager)
+  async uploadFile(@Param('productId') productId: string, @UploadedFile() file: Express.Multer.File) {
+    return this.productsService.addProductImage(productId, file.buffer, file.originalname);
   }
 }
