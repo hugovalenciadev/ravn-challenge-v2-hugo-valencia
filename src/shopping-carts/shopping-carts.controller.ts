@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -8,19 +8,17 @@ import { UpdateShoppingCartDto } from './dtos/update-shopping-cart.dto';
 import { ShoppingCartsService } from './shopping-carts.service';
 
 @Controller('shopping-carts')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ShoppingCartsController {
   constructor(private readonly shoppingCartsService: ShoppingCartsService) {}
 
   @Post('/add/:productId')
-  @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Client)
   async add(@Param('productId') productId: string, @Req() req: Request) {
     return this.shoppingCartsService.add(req?.user['id'], productId);
   }
 
-  @Post('/update/:productId')
-  @UseGuards(JwtAuthGuard)
+  @Put('/update/:productId')
   @Roles(RoleEnum.Client)
   async update(
     @Param('productId') productId: string,
@@ -30,8 +28,7 @@ export class ShoppingCartsController {
     return this.shoppingCartsService.update(req?.user['id'], productId, updateShoppingCartDto);
   }
 
-  @Post('/delete/:productId')
-  @UseGuards(JwtAuthGuard)
+  @Delete('/delete/:productId')
   @Roles(RoleEnum.Client)
   async delete(@Param('productId') productId: string, @Req() req: Request) {
     return this.shoppingCartsService.delete(req?.user['id'], productId);

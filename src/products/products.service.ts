@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Category, Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
+import { throws } from 'assert';
 import { StorageService } from 'src/integrations/services/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddCategoriesToProductDto } from './dtos/categories/add-categories-to-product.dto';
@@ -16,9 +17,27 @@ export type ProductResponse = {
 export class ProductsService {
   constructor(private readonly prismaService: PrismaService, private readonly storageService: StorageService) {}
 
+  private async checkIfProductExist(productId: string): Promise<void> {
+    const productInstance = await this.findFirst({
+      id: productId,
+      enabled: true,
+      deletedAt: null,
+    });
+
+    if (!productInstance) {
+      throw new NotFoundException('Not Found', { cause: new Error(), description: 'Product Not Found' });
+    }
+  }
+
   async findUnique(productWhereUniqueInput: Prisma.ProductWhereUniqueInput): Promise<Product | null> {
     return this.prismaService.product.findUnique({
       where: productWhereUniqueInput,
+    });
+  }
+
+  async findFirst(where: Prisma.ProductWhereInput): Promise<Product | null> {
+    return this.prismaService.product.findFirst({
+      where,
     });
   }
 
@@ -40,6 +59,8 @@ export class ProductsService {
   }
 
   async addCategories(id: string, input: AddCategoriesToProductDto): Promise<ProductResponse> {
+    await this.checkIfProductExist(id);
+
     const product = await this.prismaService.product.update({
       where: {
         id,
@@ -77,6 +98,7 @@ export class ProductsService {
   }
 
   async findById(id: string): Promise<ProductResponse> {
+    await this.checkIfProductExist(id);
     const product = await this.prismaService.product.findUniqueOrThrow({
       where: {
         id,
@@ -133,15 +155,41 @@ export class ProductsService {
   }
 
   async update(id: string, data: UpdateProductDto): Promise<Product> {
+    await this.checkIfProductExist(id);
     return this.prismaService.product.update({
       where: {
         id: id,
       },
-      data,
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async enabled(id: string): Promise<Product> {
+    const productInstance = await this.findFirst({
+      id: id,
+      deletedAt: null,
+    });
+
+    if (!productInstance) {
+      throw new NotFoundException('Not Found', { cause: new Error(), description: 'Product Not Found' });
+    }
+
+    return this.prismaService.product.update({
+      where: {
+        id: id,
+      },
+      data: {
+        enabled: true,
+        updatedAt: new Date(),
+      },
     });
   }
 
   async softDelete(id: string): Promise<Product> {
+    await this.checkIfProductExist(id);
     return this.prismaService.product.update({
       where: {
         id,
@@ -153,6 +201,7 @@ export class ProductsService {
   }
 
   async like(userId: string, productId: string): Promise<ProductLike> {
+    await this.checkIfProductExist(productId);
     return this.prismaService.productLike.upsert({
       where: {
         userId_productId: {
@@ -177,6 +226,7 @@ export class ProductsService {
   }
 
   async dislike(userId: string, productId: string): Promise<ProductLike> {
+    await this.checkIfProductExist(productId);
     return this.prismaService.productLike.delete({
       where: {
         userId_productId: {
@@ -188,6 +238,7 @@ export class ProductsService {
   }
 
   async addProductImage(productId: string, imageBuffer: Buffer, filename: string): Promise<ProductImage> {
+    await this.checkIfProductExist(productId);
     const product = await this.prismaService.product.findUnique({
       where: {
         id: productId,

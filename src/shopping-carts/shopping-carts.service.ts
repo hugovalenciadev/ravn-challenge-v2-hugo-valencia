@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, ShoppingCart } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductsService } from 'src/products/products.service';
@@ -17,6 +17,16 @@ export type ShoppingCartWithUserAndDetails = Prisma.ShoppingCartGetPayload<{
   };
 }>;
 
+export type ShoppingCartWithDetails = Prisma.ShoppingCartGetPayload<{
+  include: {
+    shoppingCartDetails: {
+      include: {
+        product: true;
+      };
+    };
+  };
+}>;
+
 @Injectable()
 export class ShoppingCartsService {
   constructor(
@@ -25,28 +35,44 @@ export class ShoppingCartsService {
     private readonly productsService: ProductsService,
   ) {}
 
+  private async checkProductStock(productId: string, quantity: number): Promise<void> {
+    const productDb = await this.productsService.findFirst({
+      id: productId,
+      deletedAt: null,
+      enabled: true,
+      quantity: {
+        gte: quantity,
+      },
+    });
+
+    if (!productDb) {
+      throw new BadRequestException('Bad Request', { cause: new Error(), description: 'Product not valid' });
+    }
+  }
   private async checkUserAndProduct(userId: string, productId: string): Promise<void> {
     const userInstance = await this.usersService.findFirst({
       id: userId,
     });
 
-    if (userInstance) {
-      throw new BadRequestException('Bad Request', { cause: new Error(), description: 'User not exists.' });
+    if (!userInstance) {
+      throw new NotFoundException('Not Found', { cause: new Error(), description: 'User Not Found.' });
     }
 
-    const productInstance = await this.productsService.findUnique({
+    const productInstance = await this.productsService.findFirst({
       id: productId,
+      enabled: true,
+      deletedAt: null,
     });
 
-    if (productInstance) {
-      throw new BadRequestException('Bad Request', { cause: new Error(), description: 'Product not exists.' });
+    if (!productInstance) {
+      throw new NotFoundException('Not Found', { cause: new Error(), description: 'Product Not Found' });
     }
   }
 
   private async findOrCreateShoppingCartStatusPending(
     userId: string,
     tx: Prisma.TransactionClient,
-  ): Promise<ShoppingCart> {
+  ): Promise<ShoppingCartWithDetails> {
     let shoppingCartInstance = await tx.shoppingCart.findFirst({
       where: {
         userId: userId,
@@ -56,6 +82,13 @@ export class ShoppingCartsService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        shoppingCartDetails: {
+          include: {
+            product: true,
+          },
+        },
+      },
     });
 
     if (!shoppingCartInstance) {
@@ -63,6 +96,13 @@ export class ShoppingCartsService {
         data: {
           userId: userId,
           status: ShoppingCartStatus.Pending,
+        },
+        include: {
+          shoppingCartDetails: {
+            include: {
+              product: true,
+            },
+          },
         },
       });
     }
@@ -90,9 +130,9 @@ export class ShoppingCartsService {
     });
   }
 
-  async add(userId: string, productId: string): Promise<ShoppingCart> {
+  async add(userId: string, productId: string): Promise<ShoppingCartWithDetails> {
     await this.checkUserAndProduct(userId, productId);
-
+    await this.checkProductStock(productId, 1);
     return await this.prismaService.$transaction(async (tx) => {
       const shoppingCartInstance = await this.findOrCreateShoppingCartStatusPending(userId, tx);
 
@@ -111,40 +151,39 @@ export class ShoppingCartsService {
         update: {},
       });
 
-      return shoppingCartInstance;
+      return await this.findOrCreateShoppingCartStatusPending(userId, tx);
     });
   }
 
-  async update(userId: string, productId: string, updateShoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
+  async update(
+    userId: string,
+    productId: string,
+    updateShoppingCartDto: UpdateShoppingCartDto,
+  ): Promise<ShoppingCartWithDetails> {
     await this.checkUserAndProduct(userId, productId);
-
+    await this.checkProductStock(productId, updateShoppingCartDto.quantity);
     return await this.prismaService.$transaction(async (tx) => {
       const shoppingCartInstance = await this.findOrCreateShoppingCartStatusPending(userId, tx);
 
-      await tx.shoppingCartDetail.upsert({
+      await tx.shoppingCartDetail.update({
         where: {
           shoppingCartId_productId: {
             productId: productId,
             shoppingCartId: shoppingCartInstance.id,
           },
         },
-        create: {
-          productId: productId,
-          quantity: 1,
-          shoppingCartId: shoppingCartInstance.id,
-        },
-        update: {
+        data: {
           productId: productId,
           quantity: updateShoppingCartDto.quantity,
           shoppingCartId: shoppingCartInstance.id,
         },
       });
 
-      return shoppingCartInstance;
+      return await this.findOrCreateShoppingCartStatusPending(userId, tx);
     });
   }
 
-  async delete(userId: string, productId: string): Promise<ShoppingCart> {
+  async delete(userId: string, productId: string): Promise<ShoppingCartWithDetails> {
     await this.checkUserAndProduct(userId, productId);
 
     return await this.prismaService.$transaction(async (tx) => {
@@ -159,7 +198,7 @@ export class ShoppingCartsService {
         },
       });
 
-      return shoppingCartInstance;
+      return await this.findOrCreateShoppingCartStatusPending(userId, tx);
     });
   }
 }

@@ -1,10 +1,20 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Order } from '@prisma/client';
+import { Order, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductsService } from 'src/products/products.service';
+import ShoppingCartStatus from 'src/shopping-carts/enums/shopping-cart-status.enum';
 import { ShoppingCartsService } from 'src/shopping-carts/shopping-carts.service';
 import { UsersService } from 'src/users/users.service';
 import OrderStatus from './enums/order-status.enum';
+
+export type OrderWithDetails = Prisma.OrderGetPayload<{
+  include: {
+    orderDetails: {
+      include: {
+        product: true;
+      };
+    };
+  };
+}>;
 
 @Injectable()
 export class OrdersService {
@@ -14,17 +24,17 @@ export class OrdersService {
     private readonly shoppingCartsService: ShoppingCartsService,
   ) {}
 
-  async findLast(userId: string): Promise<Order> {
+  async findLast(userId: string): Promise<OrderWithDetails> {
     const userInstance = await this.usersService.findFirst({
       id: userId,
       enabled: true,
     });
 
-    if (userInstance) {
+    if (!userInstance) {
       throw new BadRequestException('Bad Request', { cause: new Error(), description: 'User not exists.' });
     }
 
-    const lastOrder = this.prismaService.order.findFirst({
+    const lastOrder = await this.prismaService.order.findFirst({
       where: {
         shoppingCart: {
           user: {
@@ -37,21 +47,28 @@ export class OrdersService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        orderDetails: {
+          include: {
+            product: true,
+          },
+        },
+      },
     });
 
     if (!lastOrder) {
-      throw new NotFoundException('Not Found', { cause: new Error(), description: 'Order not exists.' });
+      throw new NotFoundException('Not Found', { cause: new Error(), description: 'Order not found.' });
     }
 
     return lastOrder;
   }
-  async create(userId: string): Promise<Order> {
+  async create(userId: string): Promise<OrderWithDetails> {
     const userInstance = await this.usersService.findFirst({
       id: userId,
       enabled: true,
     });
 
-    if (userInstance) {
+    if (!userInstance) {
       throw new BadRequestException('Bad Request', { cause: new Error(), description: 'User not exists.' });
     }
 
@@ -61,35 +78,71 @@ export class OrdersService {
       throw new BadRequestException('Shopping Cart is empty');
     }
 
-    const orderTotal = shoppingCart.shoppingCartDetails
-      .map((item) => item.product.price.times(item.quantity))
-      .reduce((prev, next) => prev.plus(next));
+    return await this.prismaService.$transaction(async (tx) => {
+      //check if cart still valid.
+      shoppingCart.shoppingCartDetails.forEach((item) => {
+        const product = item.product;
+        if (!product.enabled || product.deletedAt || product.quantity < item.quantity) {
+          throw new BadRequestException('Shopping Cart is not valid.');
+        }
+      });
 
-    return await this.prismaService.order.create({
-      data: {
-        shoppingCartId: shoppingCart.id,
-        status: OrderStatus.Created,
-        total: orderTotal,
-        orderDetails: {
-          createMany: {
-            data: shoppingCart.shoppingCartDetails.map((cd) => {
-              return {
-                price: cd.product.price,
-                quantity: cd.quantity,
-                productId: cd.productId,
-              };
-            }),
-            skipDuplicates: true,
+      const orderTotal = shoppingCart.shoppingCartDetails
+        .map((item) => item.product.price.times(item.quantity))
+        .reduce((prev, next) => prev.plus(next));
+
+      const orderCreated = await tx.order.create({
+        data: {
+          shoppingCartId: shoppingCart.id,
+          status: OrderStatus.Created,
+          total: orderTotal,
+          orderDetails: {
+            createMany: {
+              data: shoppingCart.shoppingCartDetails.map((cd) => {
+                return {
+                  price: cd.product.price,
+                  quantity: cd.quantity,
+                  productId: cd.productId,
+                };
+              }),
+              skipDuplicates: true,
+            },
           },
         },
-      },
-      include: {
-        orderDetails: {
-          include: {
-            product: true,
+        include: {
+          orderDetails: {
+            include: {
+              product: true,
+            },
           },
         },
-      },
+      });
+
+      await tx.shoppingCart.update({
+        where: {
+          id: shoppingCart.id,
+        },
+        data: {
+          status: ShoppingCartStatus.Completed,
+          updatedAt: new Date(),
+        },
+      });
+
+      await Promise.all(
+        shoppingCart.shoppingCartDetails.map(async (item) => {
+          const product = item.product;
+          await tx.product.update({
+            where: {
+              id: product.id,
+            },
+            data: {
+              quantity: product.quantity - item.quantity,
+            },
+          });
+        }),
+      );
+
+      return orderCreated;
     });
   }
 }

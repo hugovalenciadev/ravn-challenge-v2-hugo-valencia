@@ -24,7 +24,7 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -51,6 +51,12 @@ export class ProductsController {
     return this.productsService.update(id, input);
   }
 
+  @Put('/:id/enabled')
+  @Roles(RoleEnum.Manager)
+  enable(@Param('id', ParseUUIDPipe) id: string) {
+    return this.productsService.enabled(id);
+  }
+
   @Delete('/:id')
   @Roles(RoleEnum.Manager)
   delete(@Param('id', ParseUUIDPipe) id: string) {
@@ -58,14 +64,12 @@ export class ProductsController {
   }
 
   @Post('/:id/like')
-  @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Client)
   async like(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.productsService.like(req?.user['id'], id);
   }
 
   @Post('/:id/dislike')
-  @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Client)
   async dislike(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.productsService.dislike(req?.user['id'], id);
@@ -73,7 +77,6 @@ export class ProductsController {
 
   @Post('/:id/images')
   @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Manager)
   async uploadFile(@Param('id', ParseUUIDPipe) id: string, @UploadedFile() file: Express.Multer.File) {
     return this.productsService.addProductImage(id, file.buffer, file.originalname);
