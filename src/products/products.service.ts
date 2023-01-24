@@ -3,6 +3,7 @@ import { Category, Prisma, Product, ProductImage, ProductLike } from '@prisma/cl
 import { StorageService } from 'src/integrations/services/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dtos/create-product.dto';
+import { UpdateProductDto } from './dtos/update-product.dto';
 
 export type ProductResponse = {
   [key: string]: any;
@@ -73,11 +74,12 @@ export class ProductsService {
     };
   }
 
-  async update(params: { where: Prisma.ProductWhereUniqueInput; data: Prisma.ProductUpdateInput }): Promise<Product> {
-    const { where, data } = params;
+  async update(id: string, data: UpdateProductDto): Promise<Product> {
     return this.prismaService.product.update({
+      where: {
+        id: id,
+      },
       data,
-      where,
     });
   }
 

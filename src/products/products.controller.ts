@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -6,6 +6,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import RoleEnum from 'src/users/enums/role.enum';
 import { CreateProductDto } from './dtos/create-product.dto';
+import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -19,25 +20,31 @@ export class ProductsController {
     return this.productsService.create(input);
   }
 
-  @Post('/:productId/like')
-  @UseGuards(JwtAuthGuard)
-  @Roles(RoleEnum.Client)
-  async like(@Param('productId') productId: string, @Req() req: Request) {
-    return this.productsService.like(req?.user['id'], productId);
+  @Put('/:id')
+  @Roles(RoleEnum.Manager)
+  update(@Param('id') id: string, @Body() input: UpdateProductDto) {
+    return this.productsService.update(id, input);
   }
 
-  @Post('/:productId/dislike')
+  @Post('/:id/like')
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Client)
-  async dislike(@Param('productId') productId: string, @Req() req: Request) {
-    return this.productsService.dislike(req?.user['id'], productId);
+  async like(@Param('id') id: string, @Req() req: Request) {
+    return this.productsService.like(req?.user['id'], id);
   }
 
-  @Post('/:productId/images')
+  @Post('/:id/dislike')
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Client)
+  async dislike(@Param('id') id: string, @Req() req: Request) {
+    return this.productsService.dislike(req?.user['id'], id);
+  }
+
+  @Post('/:id/images')
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Manager)
-  async uploadFile(@Param('productId') productId: string, @UploadedFile() file: Express.Multer.File) {
-    return this.productsService.addProductImage(productId, file.buffer, file.originalname);
+  async uploadFile(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    return this.productsService.addProductImage(id, file.buffer, file.originalname);
   }
 }
