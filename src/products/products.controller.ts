@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Req,
@@ -29,7 +30,7 @@ export class ProductsController {
 
   @Post('/:id/categories')
   @Roles(RoleEnum.Manager)
-  addCategories(@Param('id') id: string, @Body() input: AddCategoriesToProductDto) {
+  addCategories(@Param('id', ParseUUIDPipe) id: string, @Body() input: AddCategoriesToProductDto) {
     return this.productsService.addCategories(id, input);
   }
 
@@ -40,33 +41,33 @@ export class ProductsController {
   }
 
   @Get('/:id')
-  async findById(@Param('id') id: string) {
+  async findById(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.findById(id);
   }
 
   @Put('/:id')
   @Roles(RoleEnum.Manager)
-  update(@Param('id') id: string, @Body() input: UpdateProductDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() input: UpdateProductDto) {
     return this.productsService.update(id, input);
   }
 
   @Delete('/:id')
   @Roles(RoleEnum.Manager)
-  delete(@Param('id') id: string) {
+  delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.softDelete(id);
   }
 
   @Post('/:id/like')
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Client)
-  async like(@Param('id') id: string, @Req() req: Request) {
+  async like(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.productsService.like(req?.user['id'], id);
   }
 
   @Post('/:id/dislike')
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Client)
-  async dislike(@Param('id') id: string, @Req() req: Request) {
+  async dislike(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.productsService.dislike(req?.user['id'], id);
   }
 
@@ -74,7 +75,7 @@ export class ProductsController {
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Manager)
-  async uploadFile(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@Param('id', ParseUUIDPipe) id: string, @UploadedFile() file: Express.Multer.File) {
     return this.productsService.addProductImage(id, file.buffer, file.originalname);
   }
 }
