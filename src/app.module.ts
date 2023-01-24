@@ -6,6 +6,7 @@ import storageConfig from './config/storage.config';
 import { appValidationSchema } from './config/validators/app.validator';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
+import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     UsersModule,
     ProductsModule,
+    ShoppingCartsModule,
     AuthModule,
   ],
   controllers: [],
