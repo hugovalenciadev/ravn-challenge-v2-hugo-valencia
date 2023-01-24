@@ -1,4 +1,15 @@
-import { Body, Controller, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  Put,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -24,6 +35,12 @@ export class ProductsController {
   @Roles(RoleEnum.Manager)
   update(@Param('id') id: string, @Body() input: UpdateProductDto) {
     return this.productsService.update(id, input);
+  }
+
+  @Delete('/:id')
+  @Roles(RoleEnum.Manager)
+  delete(@Param('id') id: string) {
+    return this.productsService.softDelete(id);
   }
 
   @Post('/:id/like')

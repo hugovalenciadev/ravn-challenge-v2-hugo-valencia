@@ -83,9 +83,14 @@ export class ProductsService {
     });
   }
 
-  async delete(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
-    return this.prismaService.product.delete({
-      where,
+  async softDelete(id: string): Promise<Product> {
+    return this.prismaService.product.update({
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
     });
   }
 
