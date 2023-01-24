@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Category, Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
 import { StorageService } from 'src/integrations/services/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AddCategoriesToProductDto } from './dtos/categories/add-categories-to-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 
 export type ProductResponse = {
   [key: string]: any;
-  categoryProducts: Category[];
+  categories: Category[];
   productImages?: ProductImage[];
 };
 
@@ -38,6 +39,43 @@ export class ProductsService {
     });
   }
 
+  async addCategories(id: string, input: AddCategoriesToProductDto): Promise<ProductResponse> {
+    const product = await this.prismaService.product.update({
+      where: {
+        id,
+      },
+      data: {
+        categoryProducts: {
+          create: input?.categories.map(({ name }) => {
+            return {
+              category: {
+                connectOrCreate: {
+                  where: {
+                    name,
+                  },
+                  create: {
+                    name,
+                  },
+                },
+              },
+            };
+          }),
+        },
+      },
+      include: {
+        categoryProducts: {
+          include: {
+            category: true,
+          },
+        },
+      },
+    });
+    return {
+      ...product,
+      categories: product?.categoryProducts.map((item) => item.category),
+    };
+  }
+
   async findById(id: string): Promise<ProductResponse> {
     const product = await this.prismaService.product.findUniqueOrThrow({
       where: {
@@ -54,7 +92,7 @@ export class ProductsService {
     });
     return {
       ...product,
-      categoryProducts: product?.categoryProducts.map((item) => item.category),
+      categories: product?.categoryProducts.map((item) => item.category),
     };
   }
   async create(input: CreateProductDto): Promise<ProductResponse> {
@@ -90,7 +128,7 @@ export class ProductsService {
     });
     return {
       ...product,
-      categoryProducts: product?.categoryProducts.map((item) => item.category),
+      categories: product?.categoryProducts.map((item) => item.category),
     };
   }
 

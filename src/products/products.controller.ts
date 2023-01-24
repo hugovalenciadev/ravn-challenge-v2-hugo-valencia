@@ -17,6 +17,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import RoleEnum from 'src/users/enums/role.enum';
+import { AddCategoriesToProductDto } from './dtos/categories/add-categories-to-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
@@ -25,6 +26,12 @@ import { ProductsService } from './products.service';
 @UseGuards(RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+  @Post('/:id/categories')
+  @Roles(RoleEnum.Manager)
+  addCategories(@Param('id') id: string, @Body() input: AddCategoriesToProductDto) {
+    return this.productsService.addCategories(id, input);
+  }
 
   @Post()
   @Roles(RoleEnum.Manager)

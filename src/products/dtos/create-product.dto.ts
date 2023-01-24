@@ -1,11 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsString, IsNotEmpty, IsOptional, IsPositive, IsInt, ValidateNested, ArrayNotEmpty } from 'class-validator';
-
-class CategoryDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-}
+import { CategoryDto } from './categories/category.dto';
 
 export class CreateProductDto {
   @IsString()
