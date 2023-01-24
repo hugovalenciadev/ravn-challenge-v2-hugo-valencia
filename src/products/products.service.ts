@@ -1,11 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { ProductImage, ProductLike } from '@prisma/client';
+import { Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
 import { StorageService } from 'src/integrations/services/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly prismaService: PrismaService, private readonly storageService: StorageService) {}
+
+  async findUnique(productWhereUniqueInput: Prisma.ProductWhereUniqueInput): Promise<Product | null> {
+    return this.prismaService.product.findUnique({
+      where: productWhereUniqueInput,
+    });
+  }
+
+  async findMany(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.ProductWhereUniqueInput;
+    where?: Prisma.ProductWhereInput;
+    orderBy?: Prisma.ProductOrderByWithRelationInput;
+  }): Promise<Product[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prismaService.product.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
+  }
+
+  async update(params: { where: Prisma.ProductWhereUniqueInput; data: Prisma.ProductUpdateInput }): Promise<Product> {
+    const { where, data } = params;
+    return this.prismaService.product.update({
+      data,
+      where,
+    });
+  }
+
+  async delete(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
+    return this.prismaService.product.delete({
+      where,
+    });
+  }
 
   async like(userId: string, productId: string): Promise<ProductLike> {
     return this.prismaService.productLike.upsert({
