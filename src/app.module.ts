@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import appConfig from './config/app.config';
 import { appValidationSchema } from './config/validators/app.validator';
 import { PrismaModule } from './prisma/prisma.module';
+import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { UsersModule } from './users/users.module';
     }),
     PrismaModule,
     UsersModule,
+    ProductsModule,
     AuthModule,
   ],
   controllers: [],
