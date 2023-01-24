@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductsService } from 'src/products/products.service';
@@ -14,6 +14,37 @@ export class OrdersService {
     private readonly shoppingCartsService: ShoppingCartsService,
   ) {}
 
+  async findLast(userId: string): Promise<Order> {
+    const userInstance = await this.usersService.findFirst({
+      id: userId,
+      enabled: true,
+    });
+
+    if (userInstance) {
+      throw new BadRequestException('Bad Request', { cause: new Error(), description: 'User not exists.' });
+    }
+
+    const lastOrder = this.prismaService.order.findFirst({
+      where: {
+        shoppingCart: {
+          user: {
+            id: userId,
+          },
+        },
+        status: OrderStatus.Created,
+        enabled: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!lastOrder) {
+      throw new NotFoundException('Not Found', { cause: new Error(), description: 'Order not exists.' });
+    }
+
+    return lastOrder;
+  }
   async create(userId: string): Promise<Order> {
     const userInstance = await this.usersService.findFirst({
       id: userId,

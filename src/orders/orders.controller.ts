@@ -17,4 +17,11 @@ export class OrdersController {
   async create(@Req() req: Request) {
     return this.ordersService.create(req?.user['id']);
   }
+
+  @Get('/last')
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Client)
+  async last(@Req() req: Request) {
+    return this.ordersService.findLast(req?.user['id']);
+  }
 }
