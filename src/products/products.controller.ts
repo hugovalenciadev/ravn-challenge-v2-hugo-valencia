@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   Put,
@@ -29,6 +30,11 @@ export class ProductsController {
   @Roles(RoleEnum.Manager)
   create(@Body() input: CreateProductDto) {
     return this.productsService.create(input);
+  }
+
+  @Get('/:id')
+  async findById(@Param('id') id: string) {
+    return this.productsService.findById(id);
   }
 
   @Put('/:id')

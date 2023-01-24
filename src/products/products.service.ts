@@ -8,6 +8,7 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 export type ProductResponse = {
   [key: string]: any;
   categoryProducts: Category[];
+  productImages?: ProductImage[];
 };
 
 @Injectable()
@@ -37,6 +38,25 @@ export class ProductsService {
     });
   }
 
+  async findById(id: string): Promise<ProductResponse> {
+    const product = await this.prismaService.product.findUniqueOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        categoryProducts: {
+          include: {
+            category: true,
+          },
+        },
+        productImages: true,
+      },
+    });
+    return {
+      ...product,
+      categoryProducts: product?.categoryProducts.map((item) => item.category),
+    };
+  }
   async create(input: CreateProductDto): Promise<ProductResponse> {
     const { categories, ...data } = input;
 
