@@ -19,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import RoleEnum from 'src/users/enums/role.enum';
 import { AddCategoriesToProductDto } from './dtos/categories/add-categories-to-product.dto';
+import { RemoveCategoriesFromProductDto } from './dtos/categories/remove-categories-from-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
@@ -32,6 +33,12 @@ export class ProductsController {
   @Roles(RoleEnum.Manager)
   addCategories(@Param('id', ParseUUIDPipe) id: string, @Body() input: AddCategoriesToProductDto) {
     return this.productsService.addCategories(id, input);
+  }
+
+  @Delete('/:id/categories')
+  @Roles(RoleEnum.Manager)
+  removeCategories(@Param('id', ParseUUIDPipe) id: string, @Body() input: RemoveCategoriesFromProductDto) {
+    return this.productsService.removeCategories(id, input);
   }
 
   @Post()

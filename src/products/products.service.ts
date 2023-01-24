@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Category, Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
+import { Category, CategoryProduct, Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
 import { throws } from 'assert';
 import { StorageService } from 'src/integrations/services/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddCategoriesToProductDto } from './dtos/categories/add-categories-to-product.dto';
+import { RemoveCategoriesFromProductDto } from './dtos/categories/remove-categories-from-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 
@@ -95,6 +96,21 @@ export class ProductsService {
       ...product,
       categories: product?.categoryProducts.map((item) => item.category),
     };
+  }
+
+  async removeCategories(id: string, input: RemoveCategoriesFromProductDto): Promise<CategoryProduct[]> {
+    return Promise.all(
+      input?.categoryIds.map((categoryId) => {
+        return this.prismaService.categoryProduct.delete({
+          where: {
+            categoryId_productId: {
+              categoryId,
+              productId: id,
+            },
+          },
+        });
+      }),
+    );
   }
 
   async findById(id: string): Promise<ProductResponse> {
