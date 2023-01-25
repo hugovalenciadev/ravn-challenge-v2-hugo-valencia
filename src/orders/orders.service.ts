@@ -16,6 +16,21 @@ export type OrderWithDetails = Prisma.OrderGetPayload<{
   };
 }>;
 
+export type OrderWithUserAndDetails = Prisma.OrderGetPayload<{
+  include: {
+    shoppingCart: {
+      include: {
+        user: true;
+      };
+    };
+    orderDetails: {
+      include: {
+        product: true;
+      };
+    };
+  };
+}>;
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -24,7 +39,36 @@ export class OrdersService {
     private readonly shoppingCartsService: ShoppingCartsService,
   ) {}
 
-  async findLast(userId: string): Promise<OrderWithDetails> {
+  async findMany(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.OrderWhereUniqueInput;
+    where?: Prisma.OrderWhereInput;
+    orderBy?: Prisma.OrderOrderByWithRelationInput;
+  }): Promise<OrderWithUserAndDetails[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prismaService.order.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include: {
+        shoppingCart: {
+          include: {
+            user: true,
+          },
+        },
+        orderDetails: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findLast(userId: string): Promise<Order> {
     const userInstance = await this.usersService.findFirst({
       id: userId,
       enabled: true,
