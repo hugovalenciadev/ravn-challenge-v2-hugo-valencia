@@ -75,7 +75,7 @@ export class ProductsService {
     }
 
     params.where = {
-      ...where,
+      ...params.where,
       deletedAt: null,
       enabled: true,
     };
