@@ -3,8 +3,11 @@ import {
   Controller,
   DefaultValuePipe,
   Delete,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -28,7 +31,6 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -42,12 +44,14 @@ export class ProductsController {
   }
 
   @Post('/:id/categories')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleEnum.Manager)
   addCategories(@Param('id', ParseUUIDPipe) id: string, @Body() input: AddCategoriesToProductDto) {
     return this.productsService.addCategories(id, input);
   }
 
   @Delete('/:id/categories')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleEnum.Manager)
   removeCategories(@Param('id', ParseUUIDPipe) id: string, @Body() input: RemoveCategoriesFromProductDto) {
     return this.productsService.removeCategories(id, input);
@@ -55,6 +59,7 @@ export class ProductsController {
 
   @Post()
   @Roles(RoleEnum.Manager)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   create(@Body() input: CreateProductDto) {
     return this.productsService.create(input);
   }
@@ -65,12 +70,14 @@ export class ProductsController {
   }
 
   @Put('/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleEnum.Manager)
   update(@Param('id', ParseUUIDPipe) id: string, @Body() input: UpdateProductDto) {
     return this.productsService.update(id, input);
   }
 
   @Put('/:id/enabled')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleEnum.Manager)
   enable(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.enabled(id);
@@ -78,26 +85,41 @@ export class ProductsController {
 
   @Delete('/:id')
   @Roles(RoleEnum.Manager)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.softDelete(id);
   }
 
   @Post('/:id/like')
   @Roles(RoleEnum.Client)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async like(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.productsService.like(req?.user['id'], id);
   }
 
   @Post('/:id/dislike')
   @Roles(RoleEnum.Client)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async dislike(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.productsService.dislike(req?.user['id'], id);
   }
 
   @Post('/:id/images')
-  @UseInterceptors(FileInterceptor('file'))
   @Roles(RoleEnum.Manager)
-  async uploadFile(@Param('id', ParseUUIDPipe) id: string, @UploadedFile() file: Express.Multer.File) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000 }),
+          new FileTypeValidator({ fileType: /\.(jpg|jpeg|png)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
     return this.productsService.addProductImage(id, file.buffer, file.originalname);
   }
 }
