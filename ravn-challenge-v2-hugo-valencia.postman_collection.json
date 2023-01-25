@@ -1,0 +1,1045 @@
+{
+	"info": {
+		"_postman_id": "0ccbccb0-7489-4045-b0f1-f008b2eb9694",
+		"name": "Ravn Challenge V2 - Hugo Valencia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2889699"
+	},
+	"item": [
+		{
+			"name": "[Public] SignUp Client",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"iam@hugolgonzalez.dev\",\n    \"firstName\": \"Hugol\",\n    \"lastName\": \"Gonzalez\",\n    \"password\": \"maracuya\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Public] SignIn",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"iam@hugovalencia.dev\", \"password\": \"root\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[All] Profile",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"iam@hugovalencia.dev\", \"password\": \"root\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Public] List Products",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Public] Search Products by Category",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products?q=nes&skip=0&take=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "nes"
+						},
+						{
+							"key": "skip",
+							"value": "0"
+						},
+						{
+							"key": "take",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Public] Get Product By Id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Create Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Super Mario Bros 1\",\n    \"description\": \"Best Mario's video game\",\n    \"quantity\": 10,\n    \"price\": 9.99,\n    \"categories\": [\n        { \"name\" : \"NES\"},\n        { \"name\" : \"Nintendo\"} \n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Update Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{    \n    \"quantity\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Delete Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Disable Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"enabled\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Enable Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/:id/enabled",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id",
+						"enabled"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Upload Image to Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/hugovalenciadev/Pictures/Wallpapers/wallhaven-weyrdx.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/products/:id/images",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id",
+						"images"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Add Category to Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"categories\": [\n        {\n            \"name\": \"Nintendo 8Bits\"\n        },\n        {\n            \"name\": \"NES\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products/:id/categories",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id",
+						"categories"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Remove Category from Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"categoryIds\": [\n        \"5eb6a3b0-40bd-4180-a5c5-ecf624faaa58\",\n        \"e1147599-06b2-4c22-be2e-73bfba716f69\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/products/:id/categories",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id",
+						"categories"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Like Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsInN1YiI6IjQ4MGRjM2UyLWE4NDQtNGZiMC1hNDYxLWRkZmVlZDk3OGYxZiIsInJvbGVzIjpbIkNsaWVudCJdLCJpYXQiOjE2NzQ1OTEwMTcsImV4cCI6MTY3NDY3NzQxN30.DORKehXfJ2oCa6avpht0d2hrvT7Hk9ZYC0LyJfz4PIE",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/:id/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id",
+						"like"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Dislike Product",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/:id/dislike",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						":id",
+						"dislike"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Add Product to Shopping Cart",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/shopping-carts/add/:productId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"shopping-carts",
+						"add",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Update Product in Shopping Cart",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"quantity\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/shopping-carts/update/:productId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"shopping-carts",
+						"update",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Delete Product from Shopping Cart",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/shopping-carts/delete/:productId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"shopping-carts",
+						"delete",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "10999c29-e741-43a2-9c47-9df771d976cd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Create an Order",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Client] Show my last Order",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/orders/last",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"orders",
+						"last"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Manager] Show Client Orders",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenType",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "accessToken",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImlhbUBodWdvdmFsZW5jaWEuZGV2Iiwic3ViIjoiMmMxMGFlNDUtMTA4MS00MzQzLTkyNmEtNzA4YjlkNTY2MWE5Iiwicm9sZXMiOlsiTWFuYWdlciJdLCJpYXQiOjE2NzQ1OTA5MzcsImV4cCI6MTY3NDY3NzMzN30.5NxXxDXGWGNdv4jaCGvXCECFsGErpc1Yw0r0l9YK64g",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "username",
+				"value": "john.doe@gmail.com",
+				"type": "string"
+			},
+			{
+				"key": "tokenName",
+				"value": "Client Token",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "root",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "http://localhost:3000/auth/signin",
+				"type": "string"
+			},
+			{
+				"key": "grant_type",
+				"value": "password_credentials",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
