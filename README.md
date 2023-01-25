@@ -17,10 +17,15 @@ $ yarn install
 # run prisma migrations
 $ yarn prisma migrate dev
 
-# development
+# run seed
+$ yarn prisma db seed
+
+# Manager created -> iam@hugovalencia.dev / root
+
+# start application
 $ yarn start
 
-# watch postman collection
+# check postman collection
 
 ```
 

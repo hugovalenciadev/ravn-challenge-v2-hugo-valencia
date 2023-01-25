@@ -23,7 +23,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleEnum.Client)
+  @Roles(RoleEnum.Client, RoleEnum.Manager)
   @Get('/profile')
   getProfile(@Request() req) {
     return req.user;
