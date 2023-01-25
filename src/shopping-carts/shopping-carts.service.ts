@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, ShoppingCart } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductsService } from 'src/products/products.service';
-import { UsersService } from 'src/users/users.service';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { ProductsService } from '../products/products.service';
+import { UsersService } from '../users/users.service';
 import { UpdateShoppingCartDto } from './dtos/update-shopping-cart.dto';
 import ShoppingCartStatus from './enums/shopping-cart-status.enum';
 

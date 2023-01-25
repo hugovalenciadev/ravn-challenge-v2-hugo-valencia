@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Category, CategoryProduct, Prisma, Product, ProductImage, ProductLike } from '@prisma/client';
-import { throws } from 'assert';
-import { StorageService } from 'src/integrations/services/storage.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { StorageService } from '../integrations/services/storage.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { AddCategoriesToProductDto } from './dtos/categories/add-categories-to-product.dto';
 import { RemoveCategoriesFromProductDto } from './dtos/categories/remove-categories-from-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';

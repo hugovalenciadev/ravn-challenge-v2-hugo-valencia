@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import RoleEnum from './enums/role.enum';
 
 export type UserWithUserRole = Prisma.UserGetPayload<{
