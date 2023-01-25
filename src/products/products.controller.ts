@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -28,6 +31,15 @@ import { ProductsService } from './products.service';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+  @Get()
+  async getProducts(
+    @Query('q') q?: string,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
+  ) {
+    return this.productsService.findMany({ q, skip, take });
+  }
 
   @Post('/:id/categories')
   @Roles(RoleEnum.Manager)

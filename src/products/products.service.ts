@@ -43,19 +43,51 @@ export class ProductsService {
   }
 
   async findMany(params: {
+    q?: string;
     skip?: number;
     take?: number;
     cursor?: Prisma.ProductWhereUniqueInput;
     where?: Prisma.ProductWhereInput;
-    orderBy?: Prisma.ProductOrderByWithRelationInput;
   }): Promise<Product[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { q, skip, take, cursor, where } = params;
+
+    if (q?.length > 0) {
+      const queryParams = [];
+      queryParams.push(`%${q.trim()}%`);
+
+      const query = `SELECT DISTINCT id FROM products p
+      WHERE (
+        id IN (
+          SELECT DISTINCT product_id FROM categories_products
+          WHERE category_id IN (
+            SELECT DISTINCT c.id FROM categories c
+            WHERE c.name ILIKE $1
+          )
+        )
+      );`;
+
+      const result: { id: string }[] = await this.prismaService.$queryRawUnsafe(query, ...queryParams);
+
+      params.where = {
+        ...where,
+        id: { in: result.map((t) => t.id) },
+      };
+    }
+
+    params.where = {
+      ...where,
+      deletedAt: null,
+      enabled: true,
+    };
+
     return this.prismaService.product.findMany({
       skip,
       take,
       cursor,
-      where,
-      orderBy,
+      where: params?.where,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
