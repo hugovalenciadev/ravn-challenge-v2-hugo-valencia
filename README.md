@@ -21,6 +21,7 @@ $ yarn prisma migrate dev
 $ yarn prisma db seed
 
 # Manager created -> iam@hugovalencia.dev / root
+# Client created -> john.doe@gmail.com / root
 
 # start application
 $ yarn start

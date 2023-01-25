@@ -10,7 +10,7 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 export type ProductResponse = {
   [key: string]: any;
   categories: Category[];
-  productImages?: ProductImage[];
+  images?: ProductImage[];
 };
 
 @Injectable()
@@ -47,7 +47,7 @@ export class ProductsService {
     take?: number;
     cursor?: Prisma.ProductWhereUniqueInput;
     where?: Prisma.ProductWhereInput;
-  }): Promise<Product[]> {
+  }): Promise<ProductResponse[]> {
     const { q, skip, take, cursor, where } = params;
 
     if (q?.length > 0) {
@@ -79,7 +79,7 @@ export class ProductsService {
       enabled: true,
     };
 
-    return this.prismaService.product.findMany({
+    const products = await this.prismaService.product.findMany({
       skip,
       take,
       cursor,
@@ -87,6 +87,26 @@ export class ProductsService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        productImages: true,
+        categoryProducts: {
+          include: {
+            category: true,
+          },
+        },
+      },
+    });
+
+    return products.map((product) => {
+      return {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        quantity: product.quantity,
+        price: product.price,
+        images: product.productImages,
+        categories: product?.categoryProducts.map((item) => item.category),
+      };
     });
   }
 
@@ -160,7 +180,12 @@ export class ProductsService {
       },
     });
     return {
-      ...product,
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      quantity: product.quantity,
+      price: product.price,
+      images: product.productImages,
       categories: product?.categoryProducts.map((item) => item.category),
     };
   }
